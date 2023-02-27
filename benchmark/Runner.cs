@@ -34,6 +34,9 @@ public class Runner
     public Task Delay() => Benchmark(new benchmark.Delay.SequentialSynchronizationContext(TimeSpan.FromMilliseconds(100), OnError));
 
     [Benchmark]
+    public Task DelayWithLock() => Benchmark(new benchmark.DelayLock.SequentialSynchronizationContext(TimeSpan.FromMilliseconds(100), OnError));
+
+    [Benchmark]
     public Task Semaphore() => Benchmark(new benchmark.Semaphore.SequentialSynchronizationContext(OnError));
 
     [Benchmark]

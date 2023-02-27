@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+**/GeneratedFiles/**/*.cs linguist-generated=true
+**/GeneratedFiles/**/*.xaml linguist-generated=true
+**/SamplesPhp/**/* eol=lf linguist-generated=true

@@ -7,28 +7,12 @@ public class Runner
     /// <summary>
     /// <see cref="Benchmark(SynchronizationContext)"/>で実行するループの回数
     /// </summary>
-    const int LoopCount = 1000;
+    const int LoopCount = 100;
 
     /// <summary>
-    /// <see cref="SynchronizationContext.Post(SendOrPostCallback, object?)"/>に渡すための参照型
+    /// <see cref="Benchmark(SynchronizationContext)"/>で実行するループ中にPostする回数
     /// </summary>
-    class Holder
-    {
-        public int Value { get; }
-        public Holder(int v) => Value = v;
-    }
-
-    private Holder[] _delays;
-
-    public Runner()
-    {
-        var random = new Random();
-        const int min = 100;
-        _delays = Enumerable.Range(min, LoopCount)
-            .Select(x => new Holder(x / min)) // 最低1になるはず
-            .OrderBy(_ => random.Next()) // 適当に混ぜる
-            .ToArray();
-    }
+    const int ConcurrencyRequest = 10;
 
     [Benchmark]
     public async Task Delay()
@@ -72,12 +56,15 @@ public class Runner
             return tcs.Task;
         }
 
-        // Delayのケースのワーストを測るためPostしたものが実行されるタイミングから開始する
-        await awaitPost(synchronizationContext);
-
-        foreach (var i in _delays)
+        for (int j = 0; j < LoopCount; j++)
         {
-            synchronizationContext.Post(static x => Thread.Sleep(((Holder)x!).Value), i);
+            // Delayのケースのワーストを測るためPostしたものが実行されるタイミングから開始する
+            await awaitPost(synchronizationContext);
+
+            for (int i = 0; i < ConcurrencyRequest; i++)
+            {
+                synchronizationContext.Post(static _ => Thread.Sleep(1), null);
+            }
         }
 
         // 最後のPostが終わるまで待つ

@@ -14,7 +14,7 @@ public class Runner
     /// </summary>
     const int ConcurrencyRequest = 10;
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public async Task Delay()
     {
         var s = new benchmark.Delay.SequentialSynchronizationContext(TimeSpan.FromMilliseconds(100), OnError);
